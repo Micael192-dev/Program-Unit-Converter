@@ -6,7 +6,8 @@
     <ScrollView>
         <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*" RowSpacing="3">
             
-            <Picker Grid.Column="0" Grid.Row="0" x:Name="PickerCategory" Title="Select one category">
+            <Picker Grid.Column="0" Grid.Row="0" x:Name="PickerCategory" SelectedItem="Temperature" Title="Select one category"
+                Focused="OnConfigOptionsConvertion">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String>Weight</x:String>

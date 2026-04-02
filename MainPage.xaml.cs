@@ -4,7 +4,7 @@ namespace MauiApp1;
 
 public partial class MainPage : ContentPage
 {
-	public ObservableCollection<string> OptionsConvertion=new() {"celsius","farenheit"};
+	public ObservableCollection<string> OptionsConvertion=new();
 
 	public MainPage()
 	{
@@ -52,34 +52,31 @@ public partial class MainPage : ContentPage
 
 	private void OnConfigOptionsConvertion(object? sender, EventArgs e)
 	{
-		var picker=sender as Picker;
 		string ItemSelectedPickerCategory="";
 
-		if (picker != null)
+		if (PickerCategory.SelectedItem != null)
 		{
-			ItemSelectedPickerCategory= picker.SelectedItem.ToString();
+			ItemSelectedPickerCategory=PickerCategory.SelectedItem.ToString();
+			OptionsConvertion.Clear();
+		}
+		
+		if (ItemSelectedPickerCategory == "Weight")
+		{
+			OptionsConvertion.Add("kilogram");
+			OptionsConvertion.Add("pound");
+		}
 
-			if (ItemSelectedPickerCategory == "Weight")
-			{
-				OptionsConvertion.Clear();
-				OptionsConvertion.Add("kilogram");
-				OptionsConvertion.Add("pound");
-			}
+		else if (ItemSelectedPickerCategory == "Lenght")
+		{
+			OptionsConvertion.Add("meter");
+			OptionsConvertion.Add("mile");
+		}
 
-			else if (ItemSelectedPickerCategory == "Lenght")
-			{
-				OptionsConvertion.Clear();
-				OptionsConvertion.Add("meter");
-				OptionsConvertion.Add("mile");
-			}
-
-			else if (ItemSelectedPickerCategory == "Temperature")
-			{
-				OptionsConvertion.Clear();
-				OptionsConvertion.Add("celsius");
-				OptionsConvertion.Add("farenheit");
-				OptionsConvertion.Add("kelvin");
-			}
+		else if (ItemSelectedPickerCategory == "Temperature")
+		{
+			OptionsConvertion.Add("celsius");
+			OptionsConvertion.Add("farenheit");
+			OptionsConvertion.Add("kelvin");
 		}
 	}
 
