@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using Microsoft.Maui.Platform;
 
 namespace MauiApp1;
 
 public partial class MainPage : ContentPage
 {
 	public ObservableCollection<string> OptionsConvertion=new();
+	public ObservableCollection<string> LastConversions=new();
+	public Dictionary<string,string[]> ConfigConvertion=new();
 
 	public MainPage()
 	{
@@ -14,6 +14,7 @@ public partial class MainPage : ContentPage
 
 		PickerOrigin.ItemsSource=OptionsConvertion;
 		PickerDestination.ItemsSource=OptionsConvertion;
+		PickerLastConversions.ItemsSource=LastConversions;
 	}
 
 	private int ConvertNumber(string typeOrigin, string typeDestination)
@@ -67,10 +68,20 @@ public partial class MainPage : ContentPage
 			{
 				BackgroundColor=Colors.Transparent;
 			}
+
+			if (LastConversions.Count > 4)
+			{
+				LastConversions.RemoveAt(0);
+			}
+
+			if (Category!=null)
+			{
+				UpdateCollectionLastConversions(Category,EntryNumber.Text,typeOrigin,typeDestination,result.ToString());
+			}
 		}
 	}
 
-	private void OnConfigOptionsConvertion(object? sender, EventArgs e)
+	private void OnConfigOptionsConvertion(object? sender=null, EventArgs? e=null)
 	{
 		string ItemSelectedPickerCategory="";
 
@@ -132,6 +143,38 @@ public partial class MainPage : ContentPage
 		else if(temperature>40)
 		{
 			BackgroundColor=Colors.DarkRed;
+		}
+	}
+
+	private void UpdateCollectionLastConversions(string Category,string InputNumber, string typeOrigin, 
+												 string typeDestination, string Result)
+	{
+		string KeyConvertion=$"{Result} ({typeOrigin} -> {typeDestination})";
+		string[]configuration={Category,InputNumber,typeOrigin,typeDestination,Result};
+
+		ConfigConvertion[KeyConvertion]=configuration;
+		LastConversions.Add(KeyConvertion);
+	}
+
+    private void LoadConfigurationLastConvertionSelected(object sender, FocusEventArgs e)
+	{
+		string? LastConvertionSelected=null;
+
+		if (PickerLastConversions.SelectedItem != null)
+		{
+			LastConvertionSelected=PickerLastConversions.SelectedItem.ToString();
+		}
+
+		if (LastConvertionSelected != null)
+		{
+			string[] ConfigurationLastConvertion=ConfigConvertion[LastConvertionSelected];
+
+			PickerCategory.SelectedItem=ConfigurationLastConvertion[0];
+			OnConfigOptionsConvertion();
+			EntryNumber.Text=ConfigurationLastConvertion[1];
+			PickerOrigin.SelectedItem=ConfigurationLastConvertion[2];
+			PickerDestination.SelectedItem=ConfigurationLastConvertion[3];
+			LabelResult.Text=ConfigurationLastConvertion[4];
 		}
 	}
 }
