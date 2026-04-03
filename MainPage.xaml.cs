@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using Microsoft.Maui.Platform;
 
 namespace MauiApp1;
 
@@ -39,14 +41,32 @@ public partial class MainPage : ContentPage
 
 	private void OnClickedConvert(object? sender, EventArgs e)
 	{
-		int result=10;
-		string typeOrigin=PickerOrigin.SelectedItem.ToString();
-		string typeDestination=PickerDestination.SelectedItem.ToString();
-		// string typeConvertion=PickerCategory.SelectedItem.ToString();
-		if (typeOrigin!=typeDestination)
+		int result=0;
+		string? typeOrigin="";
+		string? typeDestination="";
+
+		if (PickerOrigin.SelectedItem!=null && PickerDestination.SelectedItem !=null)
 		{
-		result=ConvertNumber(typeOrigin,typeDestination);
-		LabelResult.Text=result.ToString();
+			typeOrigin=PickerOrigin.SelectedItem.ToString();
+			typeDestination=PickerDestination.SelectedItem.ToString();
+		}
+
+		if (typeOrigin!=typeDestination && typeOrigin!=null && typeDestination!=null
+		 	&& EntryNumber.Text != null && EntryNumber.Text != "")
+		{
+			result=ConvertNumber(typeOrigin,typeDestination);
+			LabelResult.Text=result.ToString();
+
+			string? Category=PickerCategory.SelectedItem.ToString();
+
+			if (Category == "Temperature")
+			{
+				ChangeBrackgroundColorWithTemperature(result,typeDestination);
+			}	
+			else
+			{
+				BackgroundColor=Colors.Transparent;
+			}
 		}
 	}
 
@@ -54,11 +74,11 @@ public partial class MainPage : ContentPage
 	{
 		string ItemSelectedPickerCategory="";
 
-		if (PickerCategory.SelectedItem != null)
+		if (PickerCategory.SelectedItem!=null)
 		{
 			ItemSelectedPickerCategory=PickerCategory.SelectedItem.ToString();
 			OptionsConvertion.Clear();
-		}
+		}	
 		
 		if (ItemSelectedPickerCategory == "Weight")
 		{
@@ -87,5 +107,31 @@ public partial class MainPage : ContentPage
 
 		PickerOrigin.SelectedItem=typeCurrentPickerDestination;
 		PickerDestination.SelectedItem=typeCurrentPickerOrigin;
+	}
+
+	private void ChangeBrackgroundColorWithTemperature(int temperature,string typeDestination)
+	{
+		int temperatureConvertForCelsius;
+		if (typeDestination != "celsius")
+		{
+			temperatureConvertForCelsius=ConvertNumber(typeDestination,"celsius");
+		}
+		else
+		{
+			temperatureConvertForCelsius=temperature;
+		}
+
+		if(temperatureConvertForCelsius<=0)
+		{
+			BackgroundColor=Colors.DarkBlue;
+		}
+		else if(temperatureConvertForCelsius>0 && temperatureConvertForCelsius<40)
+		{
+			BackgroundColor=Colors.DarkOrange;
+		}
+		else if(temperature>40)
+		{
+			BackgroundColor=Colors.DarkRed;
+		}
 	}
 }
