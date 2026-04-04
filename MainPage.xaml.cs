@@ -52,8 +52,15 @@ public partial class MainPage : ContentPage
 			typeDestination=PickerDestination.SelectedItem.ToString();
 		}
 
+		bool InputNumberValid=int.TryParse(EntryNumber.Text, out int _);
+
+		if (!InputNumberValid)
+		{
+			LabelResult.Text="";
+		}
+
 		if (typeOrigin!=typeDestination && typeOrigin!=null && typeDestination!=null
-		 	&& EntryNumber.Text != null && EntryNumber.Text != "")
+		 	&& EntryNumber.Text != null && EntryNumber.Text != "" && InputNumberValid)
 		{
 			result=ConvertNumber(typeOrigin,typeDestination);
 			LabelResult.Text=result.ToString();
@@ -64,10 +71,6 @@ public partial class MainPage : ContentPage
 			{
 				ChangeBrackgroundColorWithTemperature(result,typeDestination);
 			}	
-			else
-			{
-				BackgroundColor=Colors.Transparent;
-			}
 
 			if (LastConversions.Count > 4)
 			{
@@ -103,11 +106,15 @@ public partial class MainPage : ContentPage
 			OptionsConvertion.Add("mile");
 		}
 
-		else if (ItemSelectedPickerCategory == "Temperature")
+		if (ItemSelectedPickerCategory == "Temperature")
 		{
 			OptionsConvertion.Add("celsius");
 			OptionsConvertion.Add("farenheit");
 			OptionsConvertion.Add("kelvin");
+		}
+		else
+		{
+			BackgroundColor=Colors.Transparent;
 		}
 	}
 
@@ -175,6 +182,15 @@ public partial class MainPage : ContentPage
 			PickerOrigin.SelectedItem=ConfigurationLastConvertion[2];
 			PickerDestination.SelectedItem=ConfigurationLastConvertion[3];
 			LabelResult.Text=ConfigurationLastConvertion[4];
+
+			if (PickerCategory.SelectedItem.ToString() == "Temperature")
+			{
+				ChangeBrackgroundColorWithTemperature(int.Parse(EntryNumber.Text),PickerDestination.SelectedItem.ToString()!);
+			}
+			else
+			{
+				BackgroundColor=Colors.Transparent;
+			}
 		}
 	}
 }
