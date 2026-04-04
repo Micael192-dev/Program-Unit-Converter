@@ -63,9 +63,11 @@ public partial class MainPage : ContentPage
 
 		bool InputNumberValid=double.TryParse(EntryNumber.Text, out double _);
 
-		if (!InputNumberValid)
+		if (!InputNumberValid || EntryNumber.Text.Contains(','))
 		{
 			LabelResult.Text="";
+			InputNumberValid=false;
+			BackgroundColor=Colors.Transparent;
 		}
 
 		if (typeOrigin!=typeDestination && typeOrigin!=null && typeDestination!=null
