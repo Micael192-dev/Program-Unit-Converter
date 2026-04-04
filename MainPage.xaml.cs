@@ -17,10 +17,10 @@ public partial class MainPage : ContentPage
 		PickerLastConversions.ItemsSource=LastConversions;
 	}
 
-	private int ConvertNumber(string typeOrigin, string typeDestination)
+	private string ConvertNumber(string typeOrigin, string typeDestination)
 	{
-		int result;
-		int NumberInput=int.Parse(EntryNumber.Text);
+		string result;
+		double NumberInput=double.Parse(EntryNumber.Text);
 
 		Dictionary<string,double> OutputResult=new(){
 			{"farenheit-celsius",(NumberInput-32)/9*5},
@@ -31,18 +31,27 @@ public partial class MainPage : ContentPage
 			{"farenheit-kelvin",(NumberInput-32)/9*5+273},
 			{"kilogram-pound",NumberInput/453.6},
 			{"pound-kilogram",NumberInput*453.6},
-			{"meter-mile",NumberInput*0.00062137},
-			{"mile-meter",NumberInput/0.00062137}
+			{"meter-mile",NumberInput/1609.344},
+			{"mile-meter",NumberInput*1609.344}
 			};
 
-		result=(int)OutputResult[$"{typeOrigin}-{typeDestination}"];
+		double valueOutput=OutputResult[$"{typeOrigin}-{typeDestination}"];
+
+		if (valueOutput - (int)valueOutput == 0)
+		{
+			int valueOutputInteger=(int)valueOutput;
+			result=valueOutputInteger.ToString();
+		}
+		else
+		{
+			result=valueOutput.ToString();
+		}
 
 		return result;
 	}
 
 	private void OnClickedConvert(object? sender, EventArgs e)
 	{
-		int result=0;
 		string? typeOrigin="";
 		string? typeDestination="";
 
@@ -52,7 +61,7 @@ public partial class MainPage : ContentPage
 			typeDestination=PickerDestination.SelectedItem.ToString();
 		}
 
-		bool InputNumberValid=int.TryParse(EntryNumber.Text, out int _);
+		bool InputNumberValid=double.TryParse(EntryNumber.Text, out double _);
 
 		if (!InputNumberValid)
 		{
@@ -62,14 +71,13 @@ public partial class MainPage : ContentPage
 		if (typeOrigin!=typeDestination && typeOrigin!=null && typeDestination!=null
 		 	&& EntryNumber.Text != null && EntryNumber.Text != "" && InputNumberValid)
 		{
-			result=ConvertNumber(typeOrigin,typeDestination);
-			LabelResult.Text=result.ToString();
+			LabelResult.Text=ConvertNumber(typeOrigin,typeDestination);
 
 			string? Category=PickerCategory.SelectedItem.ToString();
 
 			if (Category == "Temperature")
 			{
-				ChangeBrackgroundColorWithTemperature(result,typeDestination);
+				ChangeBrackgroundColorWithTemperature(typeDestination);
 			}	
 
 			if (LastConversions.Count > 4)
@@ -79,7 +87,7 @@ public partial class MainPage : ContentPage
 
 			if (Category!=null)
 			{
-				UpdateCollectionLastConversions(Category,EntryNumber.Text,typeOrigin,typeDestination,result.ToString());
+				UpdateCollectionLastConversions(Category,EntryNumber.Text,typeOrigin,typeDestination,LabelResult.Text);
 			}
 		}
 	}
@@ -127,16 +135,16 @@ public partial class MainPage : ContentPage
 		PickerDestination.SelectedItem=typeCurrentPickerOrigin;
 	}
 
-	private void ChangeBrackgroundColorWithTemperature(int temperature,string typeDestination)
+	private void ChangeBrackgroundColorWithTemperature(string typeDestination)
 	{
-		int temperatureConvertForCelsius;
+		double temperatureConvertForCelsius;
 		if (typeDestination != "celsius")
 		{
-			temperatureConvertForCelsius=ConvertNumber(typeDestination,"celsius");
+			temperatureConvertForCelsius=double.Parse(ConvertNumber(typeDestination,"celsius"));
 		}
 		else
 		{
-			temperatureConvertForCelsius=temperature;
+			temperatureConvertForCelsius=double.Parse(EntryNumber.Text);
 		}
 
 		if(temperatureConvertForCelsius<=0)
@@ -147,7 +155,7 @@ public partial class MainPage : ContentPage
 		{
 			BackgroundColor=Colors.DarkOrange;
 		}
-		else if(temperature>40)
+		else if(temperatureConvertForCelsius>40)
 		{
 			BackgroundColor=Colors.DarkRed;
 		}
@@ -185,7 +193,7 @@ public partial class MainPage : ContentPage
 
 			if (PickerCategory.SelectedItem.ToString() == "Temperature")
 			{
-				ChangeBrackgroundColorWithTemperature(int.Parse(EntryNumber.Text),PickerDestination.SelectedItem.ToString()!);
+				ChangeBrackgroundColorWithTemperature(PickerDestination.SelectedItem.ToString()!);
 			}
 			else
 			{
